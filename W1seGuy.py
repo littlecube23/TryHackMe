@@ -1,5 +1,3 @@
-##Written in help with ChatGPT##
-
 def hex_to_bytes(hex_str):
     """Converts a hex string to bytes."""
     return bytes.fromhex(hex_str)
@@ -33,8 +31,8 @@ def recover_key(encoded_text, plaintext_start, plaintext_end):
         key_byte = encrypted_bytes[enc_index] ^ end_bytes[plain_index]
         key_bytes.append(key_byte)
 
-    # Convert the recovered key bytes into a hex string
-    return ''.join([f'{b:02x}' for b in key_bytes])
+    # Return raw key bytes
+    return bytes(key_bytes)
 
 # Prompt the user to enter the XOR-encoded hex string
 encoded_text = input("Please enter the XOR encoded text: ")
@@ -45,8 +43,13 @@ plaintext_start = "THM{"
 # Define the known end of the plaintext (e.g. closing brace of the flag)
 plaintext_end = "}"
 
-# Recover the key (or parts of it) by XORing known plaintext with the ciphertext
-full_key_hex = recover_key(encoded_text, plaintext_start, plaintext_end)
+# Recover the key bytes by XORing known plaintext with the encrypted text
+key_bytes = recover_key(encoded_text, plaintext_start, plaintext_end)
 
-# Display the recovered key in hexadecimal format
-print("Recovered Key (Hex):", full_key_hex)
+# Convert and print the key in hexadecimal format
+key_hex = ''.join(f'{b:02x}' for b in key_bytes)
+print("Recovered Key (Hex):", key_hex)
+
+# Convert and print the ASCII representation (show dot for non-printable characters)
+key_ascii = ''.join(chr(b) if 32 <= b <= 126 else '.' for b in key_bytes)
+print("Recovered Key (ASCII):", key_ascii)
